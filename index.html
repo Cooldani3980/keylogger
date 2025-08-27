@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keylogger Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-ieoQ/6r/gP+eFpC/tCjVd/L6b5Ff7bH5/2eN1qQ/eFfF/X7z5B9u3v4y5j3v4y5=" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="login-container" class="form-container">
+    <h1>Authorized Access Required</h1>
+    <form id="login-form">
+      <div class="input-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" placeholder="User Credential" required>
+      </div>
+      <div class="input-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Authentication Key" required>
+      </div>
+      <button type="submit" id="login-button">Login</button>
+    </form>
+    <p>Don't have an account? <a href="#" id="show-signup">Sign Up here</a></p>
+  </div>
+  
+  <div id="signup-container" class="form-container" style="display: none;">
+    <h1>Create an Account</h1>
+    <form id="signup-form">
+      <div class="input-group">
+        <label for="new-username">User ID:</label>
+        <input type="text" id="new-username" name="new-username" placeholder="9-digit User ID" required>
+      </div>
+      <div class="input-group">
+        <label for="new-password">Password:</label>
+        <input type="password" id="new-password" name="new-password" placeholder="Min. 8 characters" required>
+      </div>
+      <button type="submit" id="signup-button">Sign Up</button>
+    </form>
+    <p>Already have an account? <a href="#" id="show-login">Login here</a></p>
+  </div>
+  
+  <div id="dashboard-container" style="display: none;">
+    <div class="header-actions">
+      <h1>Keylogger Dashboard</h1>
+      <button id="add-computer-button" class="back-button">Add Computer</button>
+      <button id="logout-button" class="back-button">Logout</button>
+    </div>
+
+    <div class="summary-cards">
+      <div class="summary-card">
+        <h3>Total Computers</h3>
+        <p id="total-computers">0</p>
+      </div>
+      <div class="summary-card">
+        <h3>Total Keystrokes</h3>
+        <p id="total-keystrokes">0</p>
+      </div>
+    </div>
+
+    <div class="search-container">
+      <input type="text" id="search-input" placeholder="Search computers...">
+      <span class="search-icon">🔍</span>
+    </div>
+    <div id="computer-grid">
+    </div>
+  </div>
+
+  <div id="keystroke-viewer" style="display: none;">
+    <h2>Recorded Keystrokes for <span id="computer-name"></span></h2>
+    <div class="search-container">
+      <label for="keystroke-search-input" class="search-label">Filter Keystroke Log</label>
+      <input type="text" id="keystroke-search-input" placeholder="Type a key or phrase...">
+      <span class="search-icon">🔍</span>
+    </div>
+    <div class="info-panel">
+      <div>Last Connected: <span id="last-connected"></span></div>
+    </div>
+    <h3>Keystroke Log</h3>
+    <div id="keystroke-log">
+    </div>
+    <button id="back-button" class="back-button">Back to Dashboard</button>
+  </div>
+  
+  <script src="script.js" defer></script>
+</body>
+</html>
