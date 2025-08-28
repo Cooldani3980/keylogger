@@ -7,7 +7,7 @@ const backButton = document.getElementById('back-button');
 const searchInput = document.getElementById('search-input');
 const keystrokeSearchInput = document.getElementById('keystroke-search-input');
 const loginContainer = document.getElementById('login-container');
-const signupContainer = document.getElementById('signup-container');
+const signupContainer = document = document.getElementById('signup-container');
 const showSignupLink = document.getElementById('show-signup');
 const showLoginLink = document.getElementById('show-login');
 const loginForm = document.getElementById('login-form');
@@ -19,6 +19,8 @@ const totalKeystrokesDisplay = document.getElementById('total-keystrokes');
 const keywordInput = document.getElementById('keyword-input');
 const addKeywordButton = document.getElementById('add-keyword-button');
 const keywordListContainer = document.getElementById('keyword-list');
+const startTimeInput = document.getElementById('start-time-input');
+const endTimeInput = document.getElementById('end-time-input');
 
 let computers = JSON.parse(localStorage.getItem('computers')) || [
     {
@@ -121,6 +123,9 @@ function showViewer(computer) {
         lastConnectedDisplay.textContent = 'N/A';
     }
     
+    document.getElementById('keystroke-log').innerHTML = '';
+    document.getElementById('word-log').innerHTML = '';
+
     const processedData = processKeystrokes(computer.keystrokes);
     renderKeystrokes(processedData.keystrokes);
     renderWords(processedData.words);
@@ -130,6 +135,8 @@ function showDashboard() {
     dashboardContainer.style.display = 'block';
     keystrokeViewer.style.display = 'none';
     keystrokeSearchInput.value = '';
+    startTimeInput.value = '';
+    endTimeInput.value = '';
 }
 
 function showRenameInput(card, currentName) {
@@ -205,7 +212,7 @@ function renderKeystrokes(keystrokesToRender) {
         const timestampElement = document.createElement('span');
         timestampElement.classList.add('keystroke-timestamp');
         const keystrokeDate = new Date(item.timestamp);
-        timestampElement.textContent = keystrokeDate.toLocaleTimeString();
+        timestampElement.textContent = keystrokeDate.toLocaleString();
 
         keystrokeItem.appendChild(keyElement);
         keystrokeItem.appendChild(timestampElement);
@@ -214,17 +221,17 @@ function renderKeystrokes(keystrokesToRender) {
 }
 
 function renderWords(wordsToRender) {
-    const wordLogList = document.getElementById('word-log');
-    if (!wordLogList) return;
+    const wordLogContainer = document.getElementById('word-log');
+    if (!wordLogContainer) return;
 
-    wordLogList.innerHTML = '';
+    wordLogContainer.innerHTML = '';
 
     wordsToRender.forEach(item => {
-        const wordItem = document.createElement('li');
-        wordItem.classList.add('keystroke-item', 'keystroke-word');
+        const wordTag = document.createElement('div');
+        wordTag.classList.add('word-tag');
         
         if (keywords.includes(item.key.toLowerCase())) {
-            wordItem.classList.add('highlight');
+            wordTag.classList.add('highlight');
         }
         
         const keyElement = document.createElement('span');
@@ -234,11 +241,11 @@ function renderWords(wordsToRender) {
         const timestampElement = document.createElement('span');
         timestampElement.classList.add('keystroke-timestamp');
         const keystrokeDate = new Date(item.timestamp);
-        timestampElement.textContent = keystrokeDate.toLocaleTimeString();
+        timestampElement.textContent = keystrokeDate.toLocaleString();
         
-        wordItem.appendChild(keyElement);
-        wordItem.appendChild(timestampElement);
-        wordLogList.appendChild(wordItem);
+        wordTag.appendChild(keyElement);
+        wordTag.appendChild(timestampElement);
+        wordLogContainer.appendChild(wordTag);
     });
 }
 
@@ -270,11 +277,11 @@ function handleAddKeyword() {
         renderKeywords();
         if (currentComputer) {
             const processedData = processKeystrokes(currentComputer.keystrokes);
-            renderKeystrokes(processedData.keystrokes);
-            renderWords(processedData.words);
+                renderKeystrokes(processedData.keystrokes);
+                renderWords(processedData.words);
+            }
+            keywordInput.value = '';
         }
-        keywordInput.value = '';
-    }
 }
 
 function getStatus() {
@@ -353,27 +360,44 @@ searchInput.addEventListener('input', (event) => {
     renderComputers(filteredComputers);
 });
 
-keystrokeSearchInput.addEventListener('input', (event) => {
-    if (currentComputer) {
-        const query = event.target.value.toLowerCase();
-        
-        // This is a bug from your old code that needs fixing
-        // We'll fix it in the next step
-        // const filteredKeystrokes = currentComputer.keystrokes.filter(keystroke =>
-        //     keystroke.key.toLowerCase().includes(query)
-        // );
-        
-        // renderKeystrokes(processKeystrokes(filteredKeystrokes).keystrokes);
-        // renderWords(processKeystrokes(filteredKeystrokes).words);
+keystrokeSearchInput.addEventListener('input', () => {
+    filterLogs();
+});
 
-        // Here is the temporary fix for now:
+startTimeInput.addEventListener('change', () => {
+    filterLogs();
+});
+
+endTimeInput.addEventListener('change', () => {
+    filterLogs();
+});
+
+function filterLogs() {
+    if (currentComputer) {
+        const textQuery = keystrokeSearchInput.value.toLowerCase();
+        const startTime = startTimeInput.value ? new Date(startTimeInput.value) : null;
+        const endTime = endTimeInput.value ? new Date(endTimeInput.value) : null;
+        
         const processedData = processKeystrokes(currentComputer.keystrokes);
-        const filteredKeystrokes = processedData.keystrokes.filter(item => item.key.toLowerCase().includes(query));
-        const filteredWords = processedData.words.filter(item => item.key.toLowerCase().includes(query));
+        
+        const filteredKeystrokes = processedData.keystrokes.filter(item => {
+            const itemTime = new Date(item.timestamp);
+            const matchesText = item.key.toLowerCase().includes(textQuery);
+            const inTimeRange = (!startTime || itemTime >= startTime) && (!endTime || itemTime <= endTime);
+            return matchesText && inTimeRange;
+        });
+
+        const filteredWords = processedData.words.filter(item => {
+            const itemTime = new Date(item.timestamp);
+            const matchesText = item.key.toLowerCase().includes(textQuery);
+            const inTimeRange = (!startTime || itemTime >= startTime) && (!endTime || itemTime <= endTime);
+            return matchesText && inTimeRange;
+        });
+        
         renderKeystrokes(filteredKeystrokes);
         renderWords(filteredWords);
     }
-});
+}
 
 loginForm.addEventListener('submit', (event) => {
     event.preventDefault();
