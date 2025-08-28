@@ -489,3 +489,9 @@ button:hover {
     gap: 2px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
+
+.word-tag.highlight {
+    background-color: #f39c12;
+    color: #1a222c
+    font-weight: 700;
+}
