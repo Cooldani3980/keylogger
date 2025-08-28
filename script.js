@@ -7,7 +7,7 @@ const backButton = document.getElementById('back-button');
 const searchInput = document.getElementById('search-input');
 const keystrokeSearchInput = document.getElementById('keystroke-search-input');
 const loginContainer = document.getElementById('login-container');
-const signupContainer = document = document.getElementById('signup-container');
+const signupContainer = document.getElementById('signup-container');
 const showSignupLink = document.getElementById('show-signup');
 const showLoginLink = document.getElementById('show-login');
 const loginForm = document.getElementById('login-form');
@@ -277,11 +277,11 @@ function handleAddKeyword() {
         renderKeywords();
         if (currentComputer) {
             const processedData = processKeystrokes(currentComputer.keystrokes);
-                renderKeystrokes(processedData.keystrokes);
-                renderWords(processedData.words);
-            }
-            keywordInput.value = '';
+            renderKeystrokes(processedData.keystrokes);
+            renderWords(processedData.words);
         }
+        keywordInput.value = '';
+    }
 }
 
 function getStatus() {
@@ -506,3 +506,19 @@ renderKeywords();
 setInterval(() => {
     renderComputers(computers);
 }, 5000);
+
+flatpickr("#start-time-input", {
+    enableTime: true,
+    dateFormat: "d/m/Y, h:i K",
+    onChange: function() {
+        filterLogs();
+    }
+});
+
+flatpickr("#end-time-input", {
+    enableTime: true,
+    dateFormat: "d/m/Y, h:i K",
+    onChange: function() {
+        filterLogs();
+    }
+});
