@@ -71,30 +71,39 @@ function saveData() {
 
 function processKeystrokes(keystrokes) {
     const processedLog = [];
+    const wordsLog = [];
     let currentWord = '';
 
     keystrokes.forEach((keystroke) => {
         const key = keystroke.key;
         const isWordCharacter = /^[a-zA-Z]$/.test(key);
+        const isSpaceOrPunctuation = /^[ .,?!]$/.test(key);
 
         if (isWordCharacter) {
             currentWord += key;
             processedLog.push(keystroke);
-        } else {
+        } else if (isSpaceOrPunctuation) {
             if (currentWord.length > 0) {
                 const wordKeystroke = { key: currentWord, timestamp: keystroke.timestamp, isWord: true };
-                processedLog.push(wordKeystroke);
+                wordsLog.push(wordKeystroke);
             }
             processedLog.push(keystroke);
             currentWord = '';
+        } else {
+            if (currentWord.length > 0) {
+                const wordKeystroke = { key: currentWord, timestamp: keystroke.timestamp, isWord: true };
+                wordsLog.push(wordKeystroke);
+                currentWord = '';
+            }
+            processedLog.push(keystroke);
         }
     });
 
     if (currentWord.length > 0) {
-        processedLog.push({ key: currentWord, timestamp: keystrokes[keystrokes.length - 1].timestamp, isWord: true });
+        wordsLog.push({ key: currentWord, timestamp: keystrokes[keystrokes.length - 1].timestamp, isWord: true });
     }
 
-    return processedLog;
+    return { keystrokes: processedLog, words: wordsLog };
 }
 
 function showViewer(computer) {
@@ -112,7 +121,9 @@ function showViewer(computer) {
         lastConnectedDisplay.textContent = 'N/A';
     }
     
-    renderKeystrokes(processKeystrokes(computer.keystrokes));
+    const processedData = processKeystrokes(computer.keystrokes);
+    renderKeystrokes(processedData.keystrokes);
+    renderWords(processedData.words);
 }
 
 function showDashboard() {
@@ -174,15 +185,15 @@ function showRenameInput(card, currentName) {
 }
 
 function renderKeystrokes(keystrokesToRender) {
-    keystrokeLog.innerHTML = '';
+    const keystrokeLogList = document.getElementById('keystroke-log');
+    if (!keystrokeLogList) return;
+    
+    keystrokeLogList.innerHTML = '';
+    
     keystrokesToRender.forEach(item => {
-        const keystrokeItem = document.createElement('div');
+        const keystrokeItem = document.createElement('li');
         keystrokeItem.classList.add('keystroke-item');
         
-        if (item.key.length > 1 || item.key === ' ') {
-            keystrokeItem.classList.add('keystroke-word');
-        }
-
         if (keywords.includes(item.key.toLowerCase())) {
             keystrokeItem.classList.add('highlight');
         }
@@ -198,7 +209,36 @@ function renderKeystrokes(keystrokesToRender) {
 
         keystrokeItem.appendChild(keyElement);
         keystrokeItem.appendChild(timestampElement);
-        keystrokeLog.appendChild(keystrokeItem);
+        keystrokeLogList.appendChild(keystrokeItem);
+    });
+}
+
+function renderWords(wordsToRender) {
+    const wordLogList = document.getElementById('word-log');
+    if (!wordLogList) return;
+
+    wordLogList.innerHTML = '';
+
+    wordsToRender.forEach(item => {
+        const wordItem = document.createElement('li');
+        wordItem.classList.add('keystroke-item', 'keystroke-word');
+        
+        if (keywords.includes(item.key.toLowerCase())) {
+            wordItem.classList.add('highlight');
+        }
+        
+        const keyElement = document.createElement('span');
+        keyElement.classList.add('keystroke-key', 'keystroke-word');
+        keyElement.textContent = item.key;
+        
+        const timestampElement = document.createElement('span');
+        timestampElement.classList.add('keystroke-timestamp');
+        const keystrokeDate = new Date(item.timestamp);
+        timestampElement.textContent = keystrokeDate.toLocaleTimeString();
+        
+        wordItem.appendChild(keyElement);
+        wordItem.appendChild(timestampElement);
+        wordLogList.appendChild(wordItem);
     });
 }
 
@@ -213,7 +253,9 @@ function renderKeywords() {
             saveData();
             renderKeywords();
             if (currentComputer) {
-                renderKeystrokes(processKeystrokes(currentComputer.keystrokes));
+                const processedData = processKeystrokes(currentComputer.keystrokes);
+                renderKeystrokes(processedData.keystrokes);
+                renderWords(processedData.words);
             }
         });
         keywordListContainer.appendChild(tag);
@@ -227,7 +269,9 @@ function handleAddKeyword() {
         saveData();
         renderKeywords();
         if (currentComputer) {
-            renderKeystrokes(processKeystrokes(currentComputer.keystrokes));
+            const processedData = processKeystrokes(currentComputer.keystrokes);
+            renderKeystrokes(processedData.keystrokes);
+            renderWords(processedData.words);
         }
         keywordInput.value = '';
     }
@@ -312,10 +356,22 @@ searchInput.addEventListener('input', (event) => {
 keystrokeSearchInput.addEventListener('input', (event) => {
     if (currentComputer) {
         const query = event.target.value.toLowerCase();
-        const filteredKeystrokes = currentComputer.keystrokes.filter(keystroke =>
-            keystroke.key.toLowerCase().includes(query)
-        );
-        renderKeystrokes(processKeystrokes(filteredKeystrokes));
+        
+        // This is a bug from your old code that needs fixing
+        // We'll fix it in the next step
+        // const filteredKeystrokes = currentComputer.keystrokes.filter(keystroke =>
+        //     keystroke.key.toLowerCase().includes(query)
+        // );
+        
+        // renderKeystrokes(processKeystrokes(filteredKeystrokes).keystrokes);
+        // renderWords(processKeystrokes(filteredKeystrokes).words);
+
+        // Here is the temporary fix for now:
+        const processedData = processKeystrokes(currentComputer.keystrokes);
+        const filteredKeystrokes = processedData.keystrokes.filter(item => item.key.toLowerCase().includes(query));
+        const filteredWords = processedData.words.filter(item => item.key.toLowerCase().includes(query));
+        renderKeystrokes(filteredKeystrokes);
+        renderWords(filteredWords);
     }
 });
 
