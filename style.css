@@ -337,26 +337,6 @@ button:hover {
     font-size: 14px;
 }
 
-#keystroke-log {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 15px;
-}
-
-.keystroke-item {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 8px 5px;
-    background-color: #3b506b;
-    border-radius: 8px;
-    text-align: center;
-    width: 50px;
-    gap: 3px;
-}
-
 .keystroke-item.keystroke-word {
     width: auto;
     padding: 8px 12px;
@@ -368,20 +348,9 @@ button:hover {
     font-weight: 700;
 }
 
-.keystroke-key {
-    font-weight: 700;
-    font-size: 18px;
-}
-
 .keystroke-key.keystroke-word {
     font-weight: 700;
-    font-size: 16px;
-}
-
-.keystroke-timestamp {
-    font-size: 11px;
-    font-weight: 505;
-    color: #bdc3c7;
+    font-size: 12px;
 }
 
 #back-button {
@@ -471,10 +440,11 @@ button:hover {
     flex-wrap: wrap;
     gap: 10px;
     padding: 15px;
-    min-height: 52px;
     background: linear-gradient(145deg, #3d5168, #2c3a4a);
     border-radius: 10px;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    height: 52px;
+    overflow-y: auto;
 }
 
 .word-tag {
@@ -492,6 +462,6 @@ button:hover {
 
 .word-tag.highlight {
     background-color: #f39c12;
-    color: #1a222c
+    color: #1a222c;
     font-weight: 700;
 }
